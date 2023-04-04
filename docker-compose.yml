@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+
+  mysql-localhost:
+    stdin_open: true
+    tty: true
+    image: mysql:8.0.31
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=test
+      - MYSQL_PASSWORD=password
+      - MYSQL_USER=armel
+    restart: unless-stopped
+    ports:
+      - "33061:3306"
+
+  user-main:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: meldroz/user_base
+    restart: on-failure
+    depends_on:
+      - mysql-localhost
+    ports:
+      - "8080:8080"
+      
