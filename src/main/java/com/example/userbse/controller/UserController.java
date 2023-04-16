@@ -105,7 +105,7 @@ public class UserController {
 
 
     @ApiOperation(value = "User id", notes = "Delete user information which belong to the userid passed in")
-    @DeleteMapping("users/{userId}")
+    @DeleteMapping("{userId}")
     @CacheEvict(key = "#userId",value = "Users")
     public ResponseEntity<Long> deleteUser(@PathVariable long userId)  {
 
@@ -123,7 +123,7 @@ public class UserController {
 
 
     @ApiOperation(value = "Updated User", notes = "Update a user in the system.")
-    @PutMapping("users")
+    @PutMapping()
     public String updateUser(@RequestBody UserRequest userRequest) throws InvalidUserException, UserNotFoundException {
 
         if (!validateUser(userRequest)) {
