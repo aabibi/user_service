@@ -18,6 +18,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Objects;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @RunWith(MockitoJUnitRunner.class)
@@ -39,10 +41,10 @@ class UserBseApplicationTests {
         Mockito.when(userService.getUserById(123)).thenReturn(user);
 
         // Perform the test
-        UserResponse response = userController.getUserByID(userId);
+        ResponseEntity<Users> response = userController.getUserByID(userId);
 
         // Assert the results
-        Assert.assertEquals(user.getId(), response.getId());
+        Assertions.assertEquals(user.getId(), Objects.requireNonNull(response.getBody()).getId());
     }
 
     @Test
@@ -52,7 +54,7 @@ class UserBseApplicationTests {
         Mockito.when(userService.getUserById(userId)).thenReturn(null);
 
         // Perform the test
-        UserResponse response = null;
+        ResponseEntity<Users> response = null;
        try {
       response = userController.getUserByID(userId);
       } catch (Exception e) {

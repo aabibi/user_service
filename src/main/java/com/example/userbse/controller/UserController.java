@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/users")
 @AllArgsConstructor
 @Slf4j
 @CrossOrigin(origins = "http://localhost:4200")
@@ -31,6 +33,19 @@ public class UserController {
     private final UserService userService;
 
     @ApiOperation(value = "New User", notes = "Add a new user to the system.")
+    @PostMapping()
+    public ResponseEntity<Long> addUser(@RequestBody  @Valid  UserRequest userRequest) throws  UserAlreadyExistException {
+
+
+        if (!ObjectUtils.isEmpty(userService.findUserBYFirstAndLastName(userRequest.getFirstName(), userRequest.getLastName()))) {
+            throw  new UserAlreadyExistException("User already exist. Aborting adding user.");
+        }
+
+        Long newUserId =  userService.createUser(userRequest);
+        return new ResponseEntity<>(newUserId, HttpStatus.OK);
+    }
+
+/*    @ApiOperation(value = "New User", notes = "Add a new user to the system.")
     @PostMapping("users")
     public UserResponse addUser(@RequestBody  @Valid  UserRequest userRequest) throws  UserAlreadyExistException {
 
@@ -46,59 +61,53 @@ public class UserController {
 
 
         ////  For Testing JVM with Visualvm
-/*        log.info("Adding 10000 users on every requests....");
+*//*        log.info("Adding 10000 users on every requests....");
 
         List<Users> usersList = new ArrayList<>();
         for ( int i=0; i <= 100000000; i++) {
             usersList.add(new Users());
 
-        }*/
+        }*//*
 
      Users users =  userService.addUser(user);
      return new UserResponse(users);
-    }
+    }*/
 
     @ApiOperation(value = "User id", notes = "Get the user information which belond to the userid passed in")
-    @GetMapping("users/{userId}")
+    @GetMapping("{userId}")
     @Cacheable(key ="#userId", value ="Users")
-    public UserResponse getUserByID(@PathVariable long userId) throws UserNotFoundException {
+    public ResponseEntity<UserResponse> getUserByID(@PathVariable long userId)  {
 
-        log.info(" Getting user from DB");
-
+             log.info(" Getting user from DB");
              Users user = userService.getUserById(userId);
-
-             if (user == null) {
-                 throw new UserNotFoundException("User with id " + userId  + " not found.");
-             }
-
-             return new UserResponse(user);
+             return new ResponseEntity<>(new UserResponse(user), HttpStatus.OK);
     }
 
 
 
     @ApiOperation(value = "N/A", notes = "Get all user info from the system")
-    @GetMapping("users")
-    public List<UserResponse> getallUsers() throws UserNotFoundException {
+    @GetMapping()
+    public ResponseEntity<List<UserResponse>> getallUsers()  {
 
         log.info(" Getting All users from DB");
 
         List<Users> users = userService.getAllUsers();
 
         if (users == null) {
-            throw new UserNotFoundException("No user found in the system.");
+            throw new UserNotFoundException("No users found in the system.");
         }
 
         List<UserResponse> userResponses = new ArrayList<>();
         users.forEach( u -> userResponses.add(new UserResponse(u)));
 
-        return  userResponses;
+        return new ResponseEntity<>(userResponses, HttpStatus.OK);
     }
 
 
     @ApiOperation(value = "User id", notes = "Delete user information which belong to the userid passed in")
     @DeleteMapping("users/{userId}")
     @CacheEvict(key = "#userId",value = "Users")
-    public UserResponse deleteUser(@PathVariable long userId) throws UserNotFoundException {
+    public ResponseEntity<Long> deleteUser(@PathVariable long userId)  {
 
         Users user = userService.getUserById(userId);
 
@@ -107,7 +116,7 @@ public class UserController {
         }
 
         userService.deleteUSerById(userId);
-        return  new UserResponse(user); // "success,  user has been deleted.";
+        return  new ResponseEntity<>(userId, HttpStatus.OK); // "success,  user has been deleted.";
     }
 
 
@@ -149,7 +158,6 @@ public class UserController {
     @CachePut(key = "#userId",value = "Users")
     public UserResponse updateUserFields(@PathVariable long userId, @RequestBody Map<String, Object> fields)  {
 
-       // Users user = userService.getUserById(userId);
         Users user = userService.updateProductByFields(userId, fields);
         return new UserResponse(user);
     }

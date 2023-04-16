@@ -7,6 +7,7 @@ import com.example.userbse.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
+import javax.persistence.EntityNotFoundException;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,7 @@ private  final UserRepository userRepository;
    public Users getUserById(long id)  {
 
         Optional<Users> u  = userRepository.findById(id);
-        return  u.orElse(null);// u.orElseThrow(() -> new EntityNotFoundException("User with id "+ id  + " not found"));
+        return   u.orElseThrow(() -> new EntityNotFoundException("User with id "+ id  + " not found"));
    }
 
    public void  deleteUSerById(long id) {
@@ -49,6 +50,14 @@ private  final UserRepository userRepository;
    public Users addUser (Users u)  {
        return userRepository.save(u);
    }
+
+    public Long createUser (UserRequest userRequest)  {
+        Users u = new Users();
+        u.setFirstName(userRequest.getFirstName());
+        u.setLastName(userRequest.getLastName());
+        Users newUser = userRepository.save(u);
+        return  newUser.getId();
+    }
 
     public void updateUser (long id, UserRequest  u) throws UserNotFoundException {
         Optional<Users> exisingUser = userRepository.findById(id);
