@@ -144,7 +144,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "Updated User", notes = "Update a user in the system.")
-    @PutMapping("users/{userId}")
+    @PutMapping("{userId}")
     @CachePut(key = "#userId",value = "Users")
     public UserResponse updateUserV2(@PathVariable long userId, @RequestBody @Valid  UserRequest userRequest) throws  UserNotFoundException {
 
@@ -154,7 +154,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "Updated user fields", notes = "Update a user field in the system, instead of sending the whole object.")
-    @PatchMapping("users/{userId}")
+    @PatchMapping("{userId}")
     @CachePut(key = "#userId",value = "Users")
     public UserResponse updateUserFields(@PathVariable long userId, @RequestBody Map<String, Object> fields)  {
 
