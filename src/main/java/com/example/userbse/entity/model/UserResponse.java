@@ -45,4 +45,7 @@ public class UserResponse implements Serializable {
         this.lastName  = user.getLastName();
         this.id        = user.getId();
     }
+
+    public UserResponse() {
+    }
 }
