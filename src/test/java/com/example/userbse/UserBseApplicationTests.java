@@ -13,7 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
@@ -41,7 +40,7 @@ class UserBseApplicationTests {
         Mockito.when(userService.getUserById(123)).thenReturn(user);
 
         // Perform the test
-        ResponseEntity<Users> response = userController.getUserByID(userId);
+        ResponseEntity<UserResponse> response = userController.getUserByID(userId);
 
         // Assert the results
         Assertions.assertEquals(user.getId(), Objects.requireNonNull(response.getBody()).getId());
@@ -54,7 +53,7 @@ class UserBseApplicationTests {
         Mockito.when(userService.getUserById(userId)).thenReturn(null);
 
         // Perform the test
-        ResponseEntity<Users> response = null;
+        ResponseEntity<UserResponse> response = null;
        try {
       response = userController.getUserByID(userId);
       } catch (Exception e) {
