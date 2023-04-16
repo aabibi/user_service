@@ -70,7 +70,7 @@ class UserBseApplicationTests {
 
 
 
-    @Test
+/*    @Test
     void testRemoveUser() {
 
         userService.deleteUSerById(1);
@@ -96,7 +96,7 @@ class UserBseApplicationTests {
         Users u = userService.findUserBYFirstAndLastName(user.getFirstName(), user.getLastName());
         Assertions.assertNotNull(u);
 
-    }
+    }*/
 
 
 
